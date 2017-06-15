@@ -1,0 +1,3 @@
+g++ -shared -fPIC desktop.plugin.cpp application.cpp lodepng.cpp display.cpp -o desktop.plugin.so
+g++ -shared -fPIC taskbar.plugin.cpp application.cpp lodepng.cpp display.cpp -o taskbar.plugin.so
+g++ -shared -fPIC windowmanager.plugin.cpp application.cpp display.cpp -o windowmanager.plugin.so
