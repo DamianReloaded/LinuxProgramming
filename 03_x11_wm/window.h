@@ -34,7 +34,7 @@ namespace reload
 
         public:
             window (reload::display* _display=NULL) : m_display(_display), m_window(0), 
-														m_backbuffer(_display)
+                                                        m_backbuffer(_display)
             {
                 m_event_mask = ExposureMask|KeyPressMask;
             }
@@ -54,7 +54,7 @@ namespace reload
                 }
 
                 // Create a X window
-			
+            
                 m_window = XCreateSimpleWindow(m_display->m_display, 
                                 RootWindow(m_display->m_display, m_display->m_screen_number), 
                                 _x, _y, _w, _h, 0, 
@@ -71,72 +71,72 @@ namespace reload
 
             void update()
             {
-				/*
-				XPeekEvent(m_display->m_display, &m_event);
-				if (m_event.xany.window != m_window) return;
-				
+                /*
+                XPeekEvent(m_display->m_display, &m_event);
+                if (m_event.xany.window != m_window) return;
+                
                 // Get events
                 XNextEvent(m_display->m_display, &m_event);
-				*/
-				
-				if(!XCheckWindowEvent(m_display->m_display, m_window, m_event_mask, &m_event)) return;
-				
+                */
+                
+                if(!XCheckWindowEvent(m_display->m_display, m_window, m_event_mask, &m_event)) return;
+                
                 switch (m_event.type)
-				{
-					case Expose:
-					{
-					   // Call our drawing callback
-					   if(on_expose) on_expose(this);
-					   // And draw the back buffer to the window
-					   XPutImage(m_display->m_display,m_window,DefaultGC(m_display->m_display,0),
-									m_backbuffer.m_ximage,0,0,0,0,m_backbuffer.width(),
-									m_backbuffer.height());
-					} break;
-					
-					case KeyPress:
-					{
-						if(on_keypress) on_keypress(this);
-						
-					} break;
+                {
+                    case Expose:
+                    {
+                       // Call our drawing callback
+                       if(on_expose) on_expose(this);
+                       // And draw the back buffer to the window
+                       XPutImage(m_display->m_display,m_window,DefaultGC(m_display->m_display,0),
+                                    m_backbuffer.m_ximage,0,0,0,0,m_backbuffer.width(),
+                                    m_backbuffer.height());
+                    } break;
+                    
+                    case KeyPress:
+                    {
+                        if(on_keypress) on_keypress(this);
+                        
+                    } break;
 
-					case ButtonPress:
-					{
-						switch (m_event.xbutton.button)
-						{
-						case 1:
-						break;
-						case 2:
-						break;
-						case 3:
-						break;
-						}
+                    case ButtonPress:
+                    {
+                        switch (m_event.xbutton.button)
+                        {
+                        case 1:
+                        break;
+                        case 2:
+                        break;
+                        case 3:
+                        break;
+                        }
 
-						break;
-					}
+                        break;
+                    }
 
-					case ConfigureNotify:
-					{
-						/*
-						w->m_control->m_width = event.xconfigure.width;
-						w->m_control->m_height = event.xconfigure.height;
-						w->m_backbuffer.resize(w->m_control->m_width, w->m_control->m_height);
-						*/
-						//event.xconfigure.width, event.xconfigure.height
-						/* fall through... */
-					} break;
-					
-				}//switch
-				
-				// force refresh every update for animations
-				/*
-				memset(&m_event, 0, sizeof(m_event));
-				m_event.type = Expose;
-				m_event.xexpose.window = m_window;
-				XSendEvent(m_display->m_display, m_window, false, ExposureMask, &m_event);
-				XFlush(m_display->m_display);
-				*/
-			}
-			
+                    case ConfigureNotify:
+                    {
+                        /*
+                        w->m_control->m_width = event.xconfigure.width;
+                        w->m_control->m_height = event.xconfigure.height;
+                        w->m_backbuffer.resize(w->m_control->m_width, w->m_control->m_height);
+                        */
+                        //event.xconfigure.width, event.xconfigure.height
+                        /* fall through... */
+                    } break;
+                    
+                }//switch
+                
+                // force refresh every update for animations
+                /*
+                memset(&m_event, 0, sizeof(m_event));
+                m_event.type = Expose;
+                m_event.xexpose.window = m_window;
+                XSendEvent(m_display->m_display, m_window, false, ExposureMask, &m_event);
+                XFlush(m_display->m_display);
+                */
+            }
+            
             void blend(reload::bitmap* bmp, const int& _xd, const int& _yd, const int& _xo,
                            const int& _yo, const int& _w, const int& _h)
             {
@@ -146,19 +146,19 @@ namespace reload
             void destroy()
             {
                 if (m_window!=0) XDestroyWindow(m_display->m_display, m_window); 
-				m_window=0;
+                m_window=0;
             }
 
-			Window& xwindow() { return m_window; }
-			
+            Window& xwindow() { return m_window; }
+            
             event on_expose;
-			event on_keypress;
+            event on_keypress;
 
         protected:
-            reload::display*	m_display;
-            reload::bitmap		m_backbuffer;
-            Window				m_window;
-            XEvent          	m_event;
-			long				m_event_mask;
+            reload::display*    m_display;
+            reload::bitmap      m_backbuffer;
+            Window              m_window;
+            XEvent              m_event;
+            long                m_event_mask;
     };
 }

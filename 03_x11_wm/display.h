@@ -40,11 +40,11 @@ namespace reload
                 m_display = XOpenDisplay(NULL);
                 if (m_display==NULL) return false;
                 m_screen_number = DefaultScreen(m_display);
-				m_screen = XDefaultScreenOfDisplay(m_display);
+                m_screen = XDefaultScreenOfDisplay(m_display);
                 m_visual = DefaultVisual(m_display,m_screen_number);
-				m_root = DefaultRootWindow(m_display);
-				WM_PROTOCOLS = XInternAtom(m_display, "WM_PROTOCOLS", false);
-				WM_DELETE_WINDOW = XInternAtom(m_display, "WM_DELETE_WINDOW", false);
+                m_root = DefaultRootWindow(m_display);
+                WM_PROTOCOLS = XInternAtom(m_display, "WM_PROTOCOLS", false);
+                WM_DELETE_WINDOW = XInternAtom(m_display, "WM_DELETE_WINDOW", false);
                 return true;
             }
     
@@ -52,25 +52,25 @@ namespace reload
             {
                 XCloseDisplay(m_display);
             }
-		
-			int screen_width() {return WidthOfScreen(m_screen); }
-			int screen_height() {return HeightOfScreen(m_screen); }
-		
-            Display*    	xdisplay 		() { return m_display; };
-            Visual*     	xvisual 		() { return m_visual; };
-            int         	xscreen_number 	() { return m_screen_number; };
-			Screen*     	xscreen 		() { return m_screen; };
-			Window&			root			() { return m_root; }
-			
-			static Atom 	WM_PROTOCOLS;
-			static Atom		WM_DELETE_WINDOW;
-		
+        
+            int screen_width                () {return WidthOfScreen(m_screen); }
+            int screen_height               () {return HeightOfScreen(m_screen); }
+        
+            Display*        xdisplay        () { return m_display; };
+            Visual*         xvisual         () { return m_visual; };
+            int             xscreen_number  () { return m_screen_number; };
+            Screen*         xscreen         () { return m_screen; };
+            Window&         root            () { return m_root; }
+            
+            static Atom     WM_PROTOCOLS;
+            static Atom     WM_DELETE_WINDOW;
+        
         protected:
-            Display*    	m_display;
-            Visual*     	m_visual;
-            int         	m_screen_number;
-			Screen*     	m_screen;
-			Window      	m_root;
+            Display*        m_display;
+            Visual*         m_visual;
+            int             m_screen_number;
+            Screen*         m_screen;
+            Window          m_root;
 
         friend class window;
         friend class bitmap;

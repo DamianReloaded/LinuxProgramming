@@ -27,21 +27,21 @@ freely, subject to the following restrictions:
 
 namespace reload {
 
-	class sharedlib
-	{
-		public:
-						sharedlib	();
-			virtual		~sharedlib	();
-			
-			const bool	open		(const std::string& _filepat);
-			void		close		();
-			void* 		get			(const std::string& _fname);
-			std::string last_error	();
-			
-		protected:
-			class 		implement;
-			implement*	imp;
-	};		
+    class sharedlib
+    {
+        public:
+                        sharedlib   ();
+            virtual     ~sharedlib  ();
+            
+            const bool  open        (const std::string& _filepat);
+            void        close       ();
+            void*       get         (const std::string& _fname);
+            std::string last_error  ();
+            
+        protected:
+            class       implement;
+            implement*  imp;
+    };        
 
 }
 

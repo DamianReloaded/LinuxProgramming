@@ -83,7 +83,7 @@ namespace reload
             void destroy()
             {
                 if (m_ximage!=0) XDestroyImage(m_ximage);
-				m_ximage=0;
+                m_ximage=0;
             }
 
             void blend(bitmap* bmp, const int& _xd, const int& _yd, const int& _xo, const int& _yo,

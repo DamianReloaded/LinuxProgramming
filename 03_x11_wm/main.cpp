@@ -7,7 +7,7 @@ using namespace reload;
 
 int main()
 {
-	application app;
-		
-	return app.run();
+    application app;
+        
+    return app.run();
 }
