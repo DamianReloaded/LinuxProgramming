@@ -61,7 +61,7 @@ namespace reload
             int         	xscreen_number 	() { return m_screen_number; };
 			Screen*     	xscreen 		() { return m_screen; };
 			Window&			root			() { return m_root; }
-		
+			
 			static Atom 	WM_PROTOCOLS;
 			static Atom		WM_DELETE_WINDOW;
 		
