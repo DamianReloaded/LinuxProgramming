@@ -27,30 +27,30 @@ using namespace reload;
 
 sharedlib::sharedlib()
 {
-	imp = new implement();
+    imp = new implement();
 }
 
 sharedlib::~sharedlib()
 {
-	delete imp;
+    delete imp;
 }
 
-const bool sharedlib::open	(const std::string& _filepath)
+const bool sharedlib::open (const std::string& _filepath)
 {
-	return imp->open(_filepath);
+    return imp->open(_filepath);
 }
 
 void sharedlib::close ()
 {
-	imp->close();
+    imp->close();
 }
 
 void* sharedlib::get (const std::string& _fname)
 {
-	return imp->get(_fname);
+    return imp->get(_fname);
 }
 
-std::string sharedlib::last_error	()
+std::string sharedlib::last_error    ()
 {
-	return imp->last_error;
+    return imp->last_error;
 }

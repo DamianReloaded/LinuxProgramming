@@ -28,30 +28,30 @@ using namespace reload;
 
 struct window_geometry
 {
-	Window      root;
-	int         x, y;
-	unsigned    width, height, bsize, depth;
+    Window      root;
+    int         x, y;
+    unsigned    width, height, bsize, depth;
 };
 
 struct querytree
 {
-	Window      root, parent;
-	Window*     windows;
-	uint32_t    count;
-				querytree(Display* _display, Window& root) { XQueryTree(_display, root, &root, &parent, &windows, &count); }
+    Window      root, parent;
+    Window*     windows;
+    uint32_t    count;
+                querytree(Display* _display, Window& root) { XQueryTree(_display, root, &root, &parent, &windows, &count); }
 };
 
 struct errorcheck
 {
-								errorcheck  () : failed(false), lock(mutex) {self=this; XSetErrorHandler(&errorcheck::callback);}
-	virtual                     ~errorcheck () {self = NULL;}
-	static int	                callback	(Display* display, XErrorEvent* e) { if (self!=NULL) self->failed = true; return 0; }
-	bool 		                failed;
-	static errorcheck*          self;
-	std::mutex                  mutex;
-	std::lock_guard<std::mutex> lock;
+                                errorcheck  () : failed(false), lock(mutex) {self=this; XSetErrorHandler(&errorcheck::callback);}
+    virtual                     ~errorcheck () {self = NULL;}
+    static int                  callback    (Display* display, XErrorEvent* e) { if (self!=NULL) self->failed = true; return 0; }
+    bool                        failed;
+    static errorcheck*          self;
+    std::mutex                  mutex;
+    std::lock_guard<std::mutex> lock;
 };
-errorcheck* errorcheck::self=NULL;	
+errorcheck* errorcheck::self=NULL;    
 
 int xerrorhandler(Display* display, XErrorEvent* e)
 {
@@ -64,10 +64,10 @@ int xerrorhandler(Display* display, XErrorEvent* e)
 
 windowmanager::windowmanager()
 {
-	titlebar_size 		= 25;
-	border_size     	= 4;
-	background_color	= 0x0000ff;
-	border_color    	= background_color;
+    titlebar_size         = 25;
+    border_size         = 4;
+    background_color    = 0x0000ff;
+    border_color        = background_color;
 }
 
 windowmanager::~windowmanager()
@@ -77,18 +77,18 @@ windowmanager::~windowmanager()
 
 bool windowmanager::init (application* _app)
 {
-	std::cout << "WindowManager Plugin: Init: ";
+    std::cout << "WindowManager Plugin: Init: ";
 
-	m_application = _app;
-	m_display = _app->display();
-	
-	{ // register wm
-		errorcheck check;
-		XSelectInput(m_display->xdisplay(), m_display->root(), SubstructureRedirectMask | SubstructureNotifyMask);
-		XSync(m_display->xdisplay(), false);
-		if (check.failed) return false;
-	}
-	
+    m_application = _app;
+    m_display = _app->display();
+    
+    { // register wm
+        errorcheck check;
+        XSelectInput(m_display->xdisplay(), m_display->root(), SubstructureRedirectMask | SubstructureNotifyMask);
+        XSync(m_display->xdisplay(), false);
+        if (check.failed) return false;
+    }
+    
     XSetErrorHandler(&xerrorhandler);
     XGrabServer(m_display->xdisplay());
     querytree wq(m_display->xdisplay(), m_display->root());
@@ -96,30 +96,30 @@ bool windowmanager::init (application* _app)
     XFree(wq.windows);
     XUngrabServer(m_display->xdisplay());
 
-	std::cout << "Done." <<std::endl;	
-	return true;
+    std::cout << "Done." <<std::endl;    
+    return true;
 }
 
 void windowmanager::update ()
 {
-	#define skipmotion() while (XCheckTypedWindowEvent(m_display->xdisplay(), e.xmotion.window, MotionNotify, &e))
-		
-	XEvent e;
-	XNextEvent(m_display->xdisplay(), &e);
-	switch (e.type)
-	{
-		case UnmapNotify:       on_unmap(e.xunmap);                              break;
-		case MapRequest:        on_map_request(e.xmaprequest);                   break;
-		case ConfigureRequest:  on_configure_request(e.xconfigurerequest);       break;
-		case KeyPress:          on_key_press(e.xkey);                            break;
-		case ButtonPress:       on_button_press(e.xbutton);  					 break;
-		case ButtonRelease:     on_button_release(e.xbutton);                    break;
-		case MotionNotify:      skipmotion(); on_motion_notify(e.xmotion);       break;
-		case ResizeRequest: break;
-		//case EnterNotify: 		XRaiseWindow(display, e.xcrossing.window); break;
-		//case FocusIn: XRaiseWindow(display, e.xfocus.window); break;
-		default: break;
-	}	
+    #define skipmotion() while (XCheckTypedWindowEvent(m_display->xdisplay(), e.xmotion.window, MotionNotify, &e))
+        
+    XEvent e;
+    XNextEvent(m_display->xdisplay(), &e);
+    switch (e.type)
+    {
+        case UnmapNotify:       on_unmap(e.xunmap);                              break;
+        case MapRequest:        on_map_request(e.xmaprequest);                   break;
+        case ConfigureRequest:  on_configure_request(e.xconfigurerequest);       break;
+        case KeyPress:          on_key_press(e.xkey);                            break;
+        case ButtonPress:       on_button_press(e.xbutton);                       break;
+        case ButtonRelease:     on_button_release(e.xbutton);                    break;
+        case MotionNotify:      skipmotion(); on_motion_notify(e.xmotion);       break;
+        case ResizeRequest: break;
+        //case EnterNotify:         XRaiseWindow(display, e.xcrossing.window); break;
+        //case FocusIn: XRaiseWindow(display, e.xfocus.window); break;
+        default: break;
+    }    
 }
 
 void windowmanager::on_unmap(const XUnmapEvent& e)
@@ -155,26 +155,26 @@ void windowmanager::on_configure_request(const XConfigureRequestEvent& e)
 
 void windowmanager::on_button_press(const XButtonEvent& e)
 {
-	// Click on a grabbed client
-	if (nonclients.count(e.window))
-	{
-		XAllowEvents(m_display->xdisplay(), ReplayPointer, CurrentTime);
-		XRaiseWindow(m_display->xdisplay(), nonclients[e.window]);
-	}
+    // Click on a grabbed client
+    if (nonclients.count(e.window))
+    {
+        XAllowEvents(m_display->xdisplay(), ReplayPointer, CurrentTime);
+        XRaiseWindow(m_display->xdisplay(), nonclients[e.window]);
+    }
 
     // We only handle clicks for nonclient windows
-	if (clients.count(e.window)>0)
-	{
-		const Window nonclient = e.window;
-		drag_start_location = point2i(e.x_root, e.y_root);
-		window_geometry wg;
-		XGetGeometry(m_display->xdisplay(), nonclient, &wg.root, &wg.x, &wg.y, &wg.width, &wg.height, &wg.bsize, &wg.depth);
-		drag_window_location = point2i(wg.x, wg.y);
-		drag_window_size = point2i(wg.width, wg.height);
-		moving = (e.y<int(titlebar_size));
-		resizing = e.x_root>int(wg.x+wg.width+wg.bsize) && e.y_root>int(wg.y+wg.height+wg.bsize);
-		XRaiseWindow(m_display->xdisplay(), nonclient);
-	}
+    if (clients.count(e.window)>0)
+    {
+        const Window nonclient = e.window;
+        drag_start_location = point2i(e.x_root, e.y_root);
+        window_geometry wg;
+        XGetGeometry(m_display->xdisplay(), nonclient, &wg.root, &wg.x, &wg.y, &wg.width, &wg.height, &wg.bsize, &wg.depth);
+        drag_window_location = point2i(wg.x, wg.y);
+        drag_window_size = point2i(wg.width, wg.height);
+        moving = (e.y<int(titlebar_size));
+        resizing = e.x_root>int(wg.x+wg.width+wg.bsize) && e.y_root>int(wg.y+wg.height+wg.bsize);
+        XRaiseWindow(m_display->xdisplay(), nonclient);
+    }
 }
 
 void windowmanager::on_button_release(const XButtonEvent& e)
@@ -185,8 +185,8 @@ void windowmanager::on_button_release(const XButtonEvent& e)
 
 void windowmanager::on_motion_notify(const XMotionEvent& e)
 {
-	if (clients.count(e.window)<1) return;
-		
+    if (clients.count(e.window)<1) return;
+        
     point2i drag_pos(e.x_root, e.y_root);
     point2i delta = drag_pos - drag_start_location;
 
@@ -209,30 +209,30 @@ void windowmanager::on_motion_notify(const XMotionEvent& e)
 
 void windowmanager::wm_delete(Display* _display, Window _window)
 {
-	// Send WM_DELETE_WINDOW message
-	Atom* protocols;
-	int count;
-	if ( XGetWMProtocols(_display, _window, &protocols, &count) )
-	{
-		for(Atom* p = protocols; p!=protocols+count; p++)
-		{
-			if (m_display->WM_DELETE_WINDOW==*p)
-			{
-				XEvent msg;
-				memset(&msg, 0, sizeof(msg));
-				msg.xclient.type = ClientMessage;
-				msg.xclient.message_type = m_display->WM_PROTOCOLS;
-				msg.xclient.window = _window;
-				msg.xclient.format = 32;
-				msg.xclient.data.l[0] = m_display->WM_DELETE_WINDOW;
-				XSendEvent(_display, _window, false, 0, &msg);
-				return;
-			}
-		}
-	}
-	
-	// WM_DELETE_WINDOW not supported. Just kill it with fire.
-	XKillClient(_display, _window);
+    // Send WM_DELETE_WINDOW message
+    Atom* protocols;
+    int count;
+    if ( XGetWMProtocols(_display, _window, &protocols, &count) )
+    {
+        for(Atom* p = protocols; p!=protocols+count; p++)
+        {
+            if (m_display->WM_DELETE_WINDOW==*p)
+            {
+                XEvent msg;
+                memset(&msg, 0, sizeof(msg));
+                msg.xclient.type = ClientMessage;
+                msg.xclient.message_type = m_display->WM_PROTOCOLS;
+                msg.xclient.window = _window;
+                msg.xclient.format = 32;
+                msg.xclient.data.l[0] = m_display->WM_DELETE_WINDOW;
+                XSendEvent(_display, _window, false, 0, &msg);
+                return;
+            }
+        }
+    }
+    
+    // WM_DELETE_WINDOW not supported. Just kill it with fire.
+    XKillClient(_display, _window);
 }
 
 void windowmanager::on_key_press(const XKeyEvent& e)
@@ -240,15 +240,15 @@ void windowmanager::on_key_press(const XKeyEvent& e)
     // Handle Alt-F4
     if ((e.state & Mod1Mask) && (e.keycode == XKeysymToKeycode(m_display->xdisplay(), XK_F4)))
     {
-		wm_delete(m_display->xdisplay(),e.window);
+        wm_delete(m_display->xdisplay(),e.window);
     }
-	// Handle Alt-Tab
+    // Handle Alt-Tab
     else if ((e.state & Mod1Mask) && (e.keycode == XKeysymToKeycode(m_display->xdisplay(), XK_Tab)))
     {
         auto i = nonclients.find(e.window); 
         if(i != nonclients.end()) i++;
-		if(i == nonclients.end()) i = nonclients.begin();
-		if(i == nonclients.end()) return;
+        if(i == nonclients.end()) i = nonclients.begin();
+        if(i == nonclients.end()) return;
         XRaiseWindow(m_display->xdisplay(), i->second);
         XSetInputFocus(m_display->xdisplay(), i->first, RevertToPointerRoot, CurrentTime);
     }
@@ -256,41 +256,41 @@ void windowmanager::on_key_press(const XKeyEvent& e)
 
 void windowmanager::terminate ()
 {
-	
+    
 }
 
 void windowmanager::decorate (const Window& w, const bool& _existed)
 {
     // Don't decorate windows already processed
     if (nonclients.count(w)>0) return;
-	// Exclude the desktop and the taskbar
-	if (w==m_application->desktop) return;
-	if (w==m_application->taskbar) return;
-	
+    // Exclude the desktop and the taskbar
+    if (w==m_application->desktop) return;
+    if (w==m_application->taskbar) return;
+    
     XWindowAttributes attrs;
     XGetWindowAttributes(m_display->xdisplay(), w, &attrs);
 
     // don't process these
     if (_existed && (attrs.override_redirect || attrs.map_state!=IsViewable) ) return;
 
-	int new_x = attrs.x-border_size; if(new_x<0) new_x = 0;
-	int new_y = attrs.y-(titlebar_size+border_size); if(new_y<0) new_y = 0;
-	int new_width = attrs.width;
-	int new_height = attrs.height+(titlebar_size);
+    int new_x = attrs.x-border_size; if(new_x<0) new_x = 0;
+    int new_y = attrs.y-(titlebar_size+border_size); if(new_y<0) new_y = 0;
+    int new_width = attrs.width;
+    int new_height = attrs.height+(titlebar_size);
 
-	// Create nonclient window
-	const Window nonclient = XCreateSimpleWindow(m_display->xdisplay(), m_display->root(), new_x, new_y, new_width, new_height, border_size, border_color, background_color);
+    // Create nonclient window
+    const Window nonclient = XCreateSimpleWindow(m_display->xdisplay(), m_display->root(), new_x, new_y, new_width, new_height, border_size, border_color, background_color);
 
-	XSelectInput(m_display->xdisplay(), nonclient, SubstructureRedirectMask | SubstructureNotifyMask | ExposureMask | ResizeRedirectMask | EnterWindowMask | KeyPressMask | ButtonPressMask | ButtonReleaseMask  | ButtonMotionMask | StructureNotifyMask );
+    XSelectInput(m_display->xdisplay(), nonclient, SubstructureRedirectMask | SubstructureNotifyMask | ExposureMask | ResizeRedirectMask | EnterWindowMask | KeyPressMask | ButtonPressMask | ButtonReleaseMask  | ButtonMotionMask | StructureNotifyMask );
 
-	XAddToSaveSet(m_display->xdisplay(), w);
-	
+    XAddToSaveSet(m_display->xdisplay(), w);
+    
     XReparentWindow(m_display->xdisplay(), w, nonclient, 0, titlebar_size);
     XMapWindow(m_display->xdisplay(), nonclient);
  
-	nonclients[w] = nonclient;
-	clients[nonclient] = w;
-	
+    nonclients[w] = nonclient;
+    clients[nonclient] = w;
+    
     // Grab Alt-Tab 
     XGrabKey(m_display->xdisplay(), XKeysymToKeycode(m_display->xdisplay(), XK_Tab), Mod1Mask, w, false, GrabModeAsync, GrabModeAsync);
     // Grab Alt-F4
@@ -308,10 +308,10 @@ void windowmanager::undecorate(const Window& w)
     XRemoveFromSaveSet(m_display->xdisplay(), w);
     XDestroyWindow(m_display->xdisplay(), nonclient);
     clients.erase( nonclients[w] );
-	nonclients.erase(w);
+    nonclients.erase(w);
 }
 
 const std::string windowmanager::last_error ()
 {
-	return "";
+    return "";
 }
