@@ -87,9 +87,14 @@ namespace reload
             }
 
             void blend(bitmap* bmp, const int& _xd, const int& _yd, const int& _xo, const int& _yo,
-                            const int& _w, const int& _h)
+                            const int& _w, const int& _h, const float& _alpha=1.0f)
             {
-                m_image.blend(&bmp->m_image, _xd, _yd, _xo, _yo, _w, _h);
+                m_image.blend(&bmp->m_image, _xd, _yd, _xo, _yo, _w, _h, _alpha);
+            }
+
+            void clear(const color& _c)
+            {
+                m_image.clear(_c);
             }
 
             const int width() { return m_image.width; }
@@ -98,7 +103,7 @@ namespace reload
         protected:
             reload::image      m_image;
             reload::display*   m_display;
-            XImage*         m_ximage;
+            XImage*            m_ximage;
 
         friend class window;
     };

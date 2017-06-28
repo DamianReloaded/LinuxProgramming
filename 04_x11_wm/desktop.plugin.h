@@ -26,7 +26,9 @@ freely, subject to the following restrictions:
 #include "plugin.h"
 #include "window.h"
 #include "bitmap.h"
-
+#include <deque>
+#include <thread>
+#include <mutex>
 namespace reload {
 
     class application;
@@ -36,23 +38,53 @@ namespace reload {
         public:
                                         desktop         ();
             virtual                     ~desktop        ();
-            
+
             virtual bool                init            (application* _app);
             virtual void                update          ();
-            virtual void                terminate       ();    
+            virtual void                terminate       ();
             virtual const std::string   last_error      ();
-            
+
         protected:
             void                        keypress        (window*);
             virtual void                draw            (window*);
-            
+
             application*                m_application;
             window                      m_window;
             bitmap                      m_wallpaper;
+            bitmap                      m_characters;
+            int                         m_screenw;
+            int                         m_screenh;
+
+            struct symbol
+            {
+                char  value;
+                float brightness;
+            };
+            typedef std::vector<symbol> array;
+            std::vector<array>          m_matrix;
+
+            struct stream
+            {
+                int   length;
+                int   speed;
+                std::vector<float> brightness;
+                int   x;
+                int   y;
+            };
+            std::vector<stream>         m_streams;
+
+            std::thread                 m_thread;
+            std::mutex                  m_mutex;
+            static void                 thread_callback(desktop*);
+
+        protected:
+            void                        update_matrix();
+            void                        draw_matrix();
+            size_t                      m_last_update;
     };
 }
 
-extern "C" 
+extern "C"
 {
     reload::plugin* get()
     {

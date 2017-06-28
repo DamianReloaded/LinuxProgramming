@@ -103,9 +103,13 @@ bool windowmanager::init (application* _app)
 void windowmanager::update ()
 {
     #define skipmotion() while (XCheckTypedWindowEvent(m_display->xdisplay(), e.xmotion.window, MotionNotify, &e))
-        
+
     XEvent e;
-    XNextEvent(m_display->xdisplay(), &e);
+    //XNextEvent(m_display->xdisplay(), &e);
+    if (!XCheckMaskEvent(m_display->xdisplay(),SubstructureRedirectMask|
+        SubstructureNotifyMask|ExposureMask|ResizeRedirectMask|EnterWindowMask|
+        KeyPressMask|ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
+        StructureNotifyMask,&e)) return;
     switch (e.type)
     {
         case UnmapNotify:       on_unmap(e.xunmap);                              break;

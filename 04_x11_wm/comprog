@@ -1,1 +1,1 @@
-g++ main.cpp application.cpp sharedlib.cpp display.cpp -lX11 -ldl
+g++ main.cpp application.cpp sharedlib.cpp display.cpp -lX11 -ldl -lpthread

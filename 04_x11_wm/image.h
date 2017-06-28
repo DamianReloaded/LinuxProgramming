@@ -35,9 +35,20 @@ namespace reload
             {
                 width = _width;
                 height = _height;
-                size_t buffersize = width*height*4;
+                buffersize = width*height*4;
                 data = (uint8_t*)malloc(buffersize);
                 for (size_t i=0; i<buffersize; i++) data[i]=255;
+            }
+
+            void clear(const color& _c)
+            {
+                for (int x=0; x<width; x++)
+                {
+                    for (int y=0; y<height; y++)
+                    {
+                        set_pixel(x,y,_c);
+                    }
+                }
             }
 
             color& get_pixel(const int& _x, const int& _y, color& _c)
@@ -47,35 +58,40 @@ namespace reload
                 return _c;
             }
 
-            void set_pixel(const int& _x, const int& _y, const color& _c)
+            void set_pixel(const int& _x, const int& _y, const color& _c, 
+                            const float& _alpha=1.0f)
             {
                 color c;
                 get_pixel(_x,_y, c);
-                c.blend(_c);
+                c.blend(_c, _alpha);
                 int at = (_x*4)+(((height-1)-_y)*width*4);
                 *((int32_t*)(data+at)) = *(int32_t*)c.value;
             }
 
             void blend (image* _img, const int& _xd, const int& _yd, const int& _xo,
-                        const int& _yo, const int& _w, const int& _h)
+                        const int& _yo, const int& _w, const int& _h, 
+                         const float& _alpha=1.0f)
             {
                 color c;
-                int w = (width<_w)?width:((_img->width<_w)?_img->width:_w);
-                int h = (height<_h)?height:((_img->height<h)?_img->height:_h);
-                if (w+_xd > width)  w -= _xd;
-                if (h+_yd > height) h -= _yd;
+                int w = _w;
+                int h = _h;
+                if (w+_xd > width)  w -= (_xd+w)-width;
+                if (h+_yd > height) h -= (_yd+h)-height;
+                w = (w<0)?0:w;
+                h = (h<0)?0:h;
 
                 for (int x=0; x<w; x++)
                 {
                     for (int y=0; y<h; y++)
                     {
                         _img->get_pixel(_xo+x, _yo+y, c);
-                        set_pixel(_xd+x, _yd+y, c);
+                        set_pixel(_xd+x, _yd+y, c, _alpha);
                     }
                 }
 
             }
 
+            size_t   buffersize;
             unsigned width;
             unsigned height;
             uint8_t* data;

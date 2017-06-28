@@ -54,10 +54,10 @@ namespace reload
                 }
 
                 // Create a X window
-            
-                m_window = XCreateSimpleWindow(m_display->m_display, 
+
+                m_window = XCreateSimpleWindow(m_display->m_display,
                                 RootWindow(m_display->m_display, m_display->m_screen_number), 
-                                _x, _y, _w, _h, 0, 
+                                _x, _y, _w, _h, 0,
                                 WhitePixel(m_display->m_display,m_display->m_screen_number), 
                                 BlackPixel(m_display->m_display, m_display->m_screen_number));
 
@@ -74,13 +74,13 @@ namespace reload
                 /*
                 XPeekEvent(m_display->m_display, &m_event);
                 if (m_event.xany.window != m_window) return;
-                
+
                 // Get events
                 XNextEvent(m_display->m_display, &m_event);
                 */
-                
+
                 if(!XCheckWindowEvent(m_display->m_display, m_window, m_event_mask, &m_event)) return;
-                
+
                 switch (m_event.type)
                 {
                     case Expose:
@@ -92,11 +92,10 @@ namespace reload
                                     m_backbuffer.m_ximage,0,0,0,0,m_backbuffer.width(),
                                     m_backbuffer.height());
                     } break;
-                    
+
                     case KeyPress:
                     {
                         if(on_keypress) on_keypress(this);
-                        
                     } break;
 
                     case ButtonPress:
@@ -124,19 +123,29 @@ namespace reload
                         //event.xconfigure.width, event.xconfigure.height
                         /* fall through... */
                     } break;
-                    
+
                 }//switch
-                
+
                 // force refresh every update for animations
                 /*
                 memset(&m_event, 0, sizeof(m_event));
                 m_event.type = Expose;
                 m_event.xexpose.window = m_window;
-                XSendEvent(m_display->m_display, m_window, false, ExposureMask, &m_event);
+                XSendEvent(m_display->m_display, m_window, false, ExposureMask, 
+                            &m_event);
                 XFlush(m_display->m_display);
                 */
             }
-            
+
+            void force_refresh()
+            {
+                memset(&m_event,0,sizeof(m_event));
+                m_event.type = Expose;
+                m_event.xexpose.window = m_window;
+                XSendEvent(m_display->m_display, m_window, false, ExposureMask,
+                            &m_event);
+            }
+
             void blend(reload::bitmap* bmp, const int& _xd, const int& _yd, const int& _xo,
                            const int& _yo, const int& _w, const int& _h)
             {
