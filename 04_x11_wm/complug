@@ -1,0 +1,2 @@
+g++ -shared -fPIC desktop.plugin.cpp application.cpp lodepng.cpp display.cpp -o desktop.plugin.so
+g++ -shared -fPIC windowmanager.plugin.cpp application.cpp lodepng.cpp display.cpp -o windowmanager.plugin.so
