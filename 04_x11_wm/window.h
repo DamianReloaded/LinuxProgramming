@@ -152,6 +152,11 @@ namespace reload
                 m_backbuffer.blend(bmp,_xd, _yd, _xo, _yo, _w, _h);
             }
 
+	    void swap(reload::bitmap* bmp)
+	    {
+		m_backbuffer.swap(bmp);
+	    }
+
             void destroy()
             {
                 if (m_window!=0) XDestroyWindow(m_display->m_display, m_window); 

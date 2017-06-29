@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #define reload_image_H
 
 #include "color.h"
+#include <cstring>
 
 namespace reload
 {
@@ -90,6 +91,11 @@ namespace reload
                 }
 
             }
+
+	    void swap(image* _img)
+	    {
+		std::memcpy(data, _img->data, buffersize);
+	    }
 
             size_t   buffersize;
             unsigned width;

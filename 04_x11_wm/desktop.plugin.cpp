@@ -96,20 +96,20 @@ bool desktop::init (application* _app)
         }
     }
 
-    m_streams.resize((m_screenw/20)*3.14f);
+    m_streams.resize(108);//(m_screenw/20)*3.14f);
     for (size_t i=0; i<m_streams.size(); i++)
     {
         m_streams[i].x = rand()%(m_screenw/20);
-        m_streams[i].y = rand()%(m_screenh/20*2)+(m_screenh/20);
-	m_streams[i].speed = rand()%4+1;
-        m_streams[i].length = rand()%int((m_screenh/20)*0.75f)+3;
+        m_streams[i].y = rand()%(m_screenh/20)+(m_screenh/20);
+	m_streams[i].speed = rand()%1+1;
+        m_streams[i].length = rand()%int((m_screenh/20)*1.0f)+3;
         m_streams[i].brightness.resize(m_streams[i].length);
         size_t bsize = m_streams[i].brightness.size();
         for (size_t b=1; b<bsize-1;b++)
         {
             m_streams[i].brightness[(bsize-1)-b] = 0.7f * ( float(b)/float(bsize) );
         }
-        m_streams[i].brightness[2]=0.8f;
+        //m_streams[i].brightness[2]=0.8f;
         m_streams[i].brightness[1]=0.9f;
         m_streams[i].brightness[0]=1.0f;
     }
@@ -124,7 +124,7 @@ void desktop::update_matrix()
 {
     m_wallpaper.clear(color(0,0,0,255));
 
-    for (size_t i=0; i<m_streams.size(); i++)
+    for (size_t i=m_streams.size()-1; i>0; i--)
     {
         for (size_t n=0; n<m_streams[i].length; n++)
         {
@@ -139,19 +139,19 @@ void desktop::update_matrix()
 
         if ((m_streams[i].y+m_streams[i].length)<0)
         {
-        m_streams[i].x = rand()%(m_screenw/20);
-        m_streams[i].y = rand()%(m_screenh/20*2)+(m_screenh/20);
-	m_streams[i].speed = rand()%4+1;
-        m_streams[i].length = rand()%int((m_screenh/20)*0.75f)+3;
-        m_streams[i].brightness.resize(m_streams[i].length);
-        size_t bsize = m_streams[i].brightness.size();
-        for (size_t b=1; b<bsize-1;b++)
-        {
-            m_streams[i].brightness[(bsize-1)-b] = 0.7f * ( float(b)/float(bsize) );
-        }
-        m_streams[i].brightness[2]=0.8f;
-        m_streams[i].brightness[1]=0.9f;
-        m_streams[i].brightness[0]=1.0f;
+            m_streams[i].x = rand()%(m_screenw/20);
+            m_streams[i].y = rand()%(m_screenh/20)+(m_screenh/20);
+            m_streams[i].speed = rand()%1+1;
+            m_streams[i].length = rand()%int((m_screenh/20)*1.0f)+3;
+            m_streams[i].brightness.resize(m_streams[i].length,0);
+            size_t bsize = m_streams[i].brightness.size();
+            for (size_t b=1; b<bsize-1;b++)
+            {
+                m_streams[i].brightness[(bsize-1)-b] = 0.7f * ( float(b)/float(bsize) );
+            }
+            //m_streams[i].brightness[2]=0.8f;
+            m_streams[i].brightness[1]=0.9f;
+            m_streams[i].brightness[0]=1.0f;
         }
     }
 
@@ -163,7 +163,10 @@ void desktop::update_matrix()
             if (m_matrix[c][r].brightness>=0.05)
             {
                 m_wallpaper.blend(&m_characters,c*20,r*20,0,m_matrix[c][r].value*20,20,20,m_matrix[c][r].brightness);
-		m_matrix[c][r].brightness-=0.1;
+		if (m_matrix[c][r].brightness!=1)
+		    m_matrix[c][r].brightness-=0.1;
+		else
+		    m_matrix[c][r].brightness-=0.001;
             }
 	    else
 	    {
@@ -176,7 +179,7 @@ void desktop::update_matrix()
 void desktop::draw_matrix()
 {
 //    m_mutex.lock();
-    m_window.blend(&m_wallpaper,0,0,0,0,1920,1080);
+    m_window.swap(&m_wallpaper);
 //    m_mutex.unlock();
 }
 

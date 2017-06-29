@@ -92,6 +92,11 @@ namespace reload
                 m_image.blend(&bmp->m_image, _xd, _yd, _xo, _yo, _w, _h, _alpha);
             }
 
+	    void swap(bitmap* bmp)
+	    {
+		m_image.swap(&bmp->m_image);
+	    }
+
             void clear(const color& _c)
             {
                 m_image.clear(_c);
