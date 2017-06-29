@@ -102,7 +102,7 @@ bool desktop::init (application* _app)
         m_streams[i].x = rand()%(m_screenw/20);
         m_streams[i].y = rand()%(m_screenh/20*2)+(m_screenh/20);
 	m_streams[i].speed = rand()%4+1;
-        m_streams[i].length = rand()%int((m_screenh/20)*0.45f)+3;
+        m_streams[i].length = rand()%int((m_screenh/20)*0.75f)+3;
         m_streams[i].brightness.resize(m_streams[i].length);
         size_t bsize = m_streams[i].brightness.size();
         for (size_t b=1; b<bsize-1;b++)
@@ -142,7 +142,7 @@ void desktop::update_matrix()
         m_streams[i].x = rand()%(m_screenw/20);
         m_streams[i].y = rand()%(m_screenh/20*2)+(m_screenh/20);
 	m_streams[i].speed = rand()%4+1;
-        m_streams[i].length = rand()%int((m_screenh/20)*0.45f)+3;
+        m_streams[i].length = rand()%int((m_screenh/20)*0.75f)+3;
         m_streams[i].brightness.resize(m_streams[i].length);
         size_t bsize = m_streams[i].brightness.size();
         for (size_t b=1; b<bsize-1;b++)
@@ -159,7 +159,7 @@ void desktop::update_matrix()
     {
         for (size_t r=0; r<m_matrix[c].size(); r++)
         {
-            if (rand()%23==11) m_matrix[c][r].value = rand()%54;
+            if (rand()%11==5) m_matrix[c][r].value = rand()%54;
             if (m_matrix[c][r].brightness>=0.05)
             {
                 m_wallpaper.blend(&m_characters,c*20,r*20,0,m_matrix[c][r].value*20,20,20,m_matrix[c][r].brightness);
