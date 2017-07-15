@@ -108,7 +108,7 @@ bool desktop::init (application* _app)
         m_streams[i].x = col;
         m_streams[i].y = rand()%(m_screenh/20)+(m_screenh/20);
 	m_streams[i].speed = float(rand()%7+1);
-        m_streams[i].length = rand()%int((m_screenh/20)*1.0f)+3;
+        m_streams[i].length = rand()%int((m_screenh/20)*1.0f)+4;
         m_streams[i].brightness.resize(m_streams[i].length);
         size_t bsize = m_streams[i].brightness.size();
         for (size_t b=1; b<bsize-1;b++)
@@ -164,7 +164,7 @@ void desktop::update_matrix()
     	    m_streams[i].x = col;
             m_streams[i].y = rand()%(m_screenh/20)+(m_screenh/20);
 	    m_streams[i].speed = float(rand()%7+1);
-            m_streams[i].length = rand()%int((m_screenh/20)*1.0f)+3;
+            m_streams[i].length = rand()%int((m_screenh/20)*1.0f)+4;
             m_streams[i].brightness.resize(m_streams[i].length,0);
             size_t bsize = m_streams[i].brightness.size();
             for (size_t b=0; b<bsize-1;b++)
