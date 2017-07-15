@@ -57,7 +57,8 @@ namespace reload {
 
             struct symbol
             {
-                char  value;
+                char  	value;
+		double	last_change;
                 float brightness;
             };
             typedef std::vector<symbol> array;
@@ -66,13 +67,14 @@ namespace reload {
             struct stream
             {
                 int   length;
-                int   speed;
+        	float speed;
                 std::vector<float> brightness;
                 int   x;
-                int   y;
+                float y;
+		double last_update;
             };
             std::vector<stream>         m_streams;
-
+	    std::vector<uint8_t>	m_colused;
             std::thread                 m_thread;
             std::mutex                  m_mutex;
             static void                 thread_callback(desktop*);

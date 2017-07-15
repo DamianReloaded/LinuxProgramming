@@ -66,7 +66,7 @@ windowmanager::windowmanager()
 {
     titlebar_size         = 25;
     border_size         = 4;
-    background_color    = 0x0000ff;
+    background_color    = 0x21851d;
     border_color        = background_color;
 }
 

@@ -43,6 +43,7 @@ namespace reload
 
             void clear(const color& _c)
             {
+/*
                 for (int x=0; x<width; x++)
                 {
                     for (int y=0; y<height; y++)
@@ -50,6 +51,8 @@ namespace reload
                         set_pixel(x,y,_c);
                     }
                 }
+*/
+		memset(data, 0, buffersize);
             }
 
             color& get_pixel(const int& _x, const int& _y, color& _c)

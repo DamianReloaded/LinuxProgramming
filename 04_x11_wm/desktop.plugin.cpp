@@ -88,20 +88,26 @@ bool desktop::init (application* _app)
     m_matrix.resize(m_screenw/20);
     for (size_t c=0; c<m_matrix.size(); c++)
     {
-         m_matrix[c].resize(m_screenh/20);
+        m_matrix[c].resize(m_screenh/20);
         for (size_t r=0; r<m_matrix[c].size(); r++)
         {
             m_matrix[c][r].value=rand()%54;
             m_matrix[c][r].brightness = 0;
+	    m_matrix[c][r].last_change=get_ticks();
         }
     }
 
-    m_streams.resize(108);//(m_screenw/20)*3.14f);
+    m_colused.resize(m_matrix.size(),0);
+
+    m_streams.resize(m_matrix.size());//(m_screenw/20)*3.14f);
     for (size_t i=0; i<m_streams.size(); i++)
     {
-        m_streams[i].x = rand()%(m_screenw/20);
+	int col = rand()%(m_screenw/20);
+	while (m_colused[col]!=0) col = rand()%(m_screenw/20);
+	m_colused[col]=1;
+        m_streams[i].x = col;
         m_streams[i].y = rand()%(m_screenh/20)+(m_screenh/20);
-	m_streams[i].speed = rand()%1+1;
+	m_streams[i].speed = float(rand()%7+1);
         m_streams[i].length = rand()%int((m_screenh/20)*1.0f)+3;
         m_streams[i].brightness.resize(m_streams[i].length);
         size_t bsize = m_streams[i].brightness.size();
@@ -109,9 +115,9 @@ bool desktop::init (application* _app)
         {
             m_streams[i].brightness[(bsize-1)-b] = 0.7f * ( float(b)/float(bsize) );
         }
-        //m_streams[i].brightness[2]=0.8f;
         m_streams[i].brightness[1]=0.9f;
         m_streams[i].brightness[0]=1.0f;
+	m_streams[i].last_update=get_ticks();
     }
 
     m_thread = std::thread(desktop::thread_callback,this);
@@ -122,10 +128,17 @@ bool desktop::init (application* _app)
 
 void desktop::update_matrix()
 {
+    double ticks = get_ticks();
+
     m_wallpaper.clear(color(0,0,0,255));
 
     for (size_t i=m_streams.size()-1; i>0; i--)
     {
+	for (size_t r=0; r<m_matrix[0].size(); r++)
+	{
+	    m_matrix[m_streams[i].x][r].brightness=0;
+	}
+
         for (size_t n=0; n<m_streams[i].length; n++)
         {
             int x = m_streams[i].x;
@@ -135,21 +148,29 @@ void desktop::update_matrix()
                 m_matrix[x][y].brightness=m_streams[i].brightness[n];
             }
         }
-        m_streams[i].y-=m_streams[i].speed;
+
+	if (ticks-m_streams[i].last_update>180/*1800*//m_streams[i].speed)
+	{
+	    m_streams[i].last_update = get_ticks();
+    	    m_streams[i].y-=1;
+	}
 
         if ((m_streams[i].y+m_streams[i].length)<0)
         {
-            m_streams[i].x = rand()%(m_screenw/20);
+	    m_colused[m_streams[i].x]=0;
+	    int col = rand()%(m_screenw/20);
+	    while (m_colused[col]!=0) col = rand()%(m_screenw/20);
+	    m_colused[col]=1;
+    	    m_streams[i].x = col;
             m_streams[i].y = rand()%(m_screenh/20)+(m_screenh/20);
-            m_streams[i].speed = rand()%1+1;
+	    m_streams[i].speed = float(rand()%7+1);
             m_streams[i].length = rand()%int((m_screenh/20)*1.0f)+3;
             m_streams[i].brightness.resize(m_streams[i].length,0);
             size_t bsize = m_streams[i].brightness.size();
-            for (size_t b=1; b<bsize-1;b++)
+            for (size_t b=0; b<bsize-1;b++)
             {
                 m_streams[i].brightness[(bsize-1)-b] = 0.7f * ( float(b)/float(bsize) );
             }
-            //m_streams[i].brightness[2]=0.8f;
             m_streams[i].brightness[1]=0.9f;
             m_streams[i].brightness[0]=1.0f;
         }
@@ -159,9 +180,16 @@ void desktop::update_matrix()
     {
         for (size_t r=0; r<m_matrix[c].size(); r++)
         {
-            if (rand()%11==5) m_matrix[c][r].value = rand()%54;
             if (m_matrix[c][r].brightness>=0.05)
             {
+		if ((ticks-m_matrix[c][r].last_change)>500/*3000*/)
+		{
+		    if ((rand()%23==11))
+		    { 
+			m_matrix[c][r].value = rand()%54;
+		    }
+		    m_matrix[c][r].last_change=ticks;
+		}
                 m_wallpaper.blend(&m_characters,c*20,r*20,0,m_matrix[c][r].value*20,20,20,m_matrix[c][r].brightness);
 		if (m_matrix[c][r].brightness!=1)
 		    m_matrix[c][r].brightness-=0.1;
@@ -178,14 +206,11 @@ void desktop::update_matrix()
 
 void desktop::draw_matrix()
 {
-//    m_mutex.lock();
     m_window.swap(&m_wallpaper);
-//    m_mutex.unlock();
 }
 
 void desktop::draw (window* _window)
 {
-    //m_window.force_refresh();
 }
 
 void desktop::update ()
@@ -193,16 +218,6 @@ void desktop::update ()
     m_mutex.lock();
 	m_window.update();
     m_mutex.unlock();
-/*
-    double now = get_ticks();
-    if (now-m_last_update>200)
-    {
-        update_matrix();
-        draw_matrix();
-        m_last_update = now;
-        m_window.force_refresh();
-    }
-*/
 }
 
 void desktop::keypress(window*) {}
